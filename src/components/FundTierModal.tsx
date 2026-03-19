@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { type Address } from 'viem';
+import { useState, useEffect } from 'react'; // Импортируем useEffect
+import { type Address, formatEther } from 'viem';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { CrowdfundingABI } from '@/src/abis/Crowdfunding';
@@ -14,20 +14,26 @@ type FundTierModalProps = {
   tierName: string;
 };
 
-export const FundTierModal = ({ 
-  setIsModalOpen, 
-  campaignAddress, 
-  tierIndex, 
-  tierAmount, 
-  tierName 
+export const FundTierModal = ({
+  setIsModalOpen,
+  campaignAddress,
+  tierIndex,
+  tierAmount,
+  tierName
 }: FundTierModalProps) => {
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   const { data: hash, writeContract, isPending } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-    hash,
-  });
+  const amountInEth = formatEther(tierAmount);
+
+  // ✅ Правильно: используем useEffect для вызова функции родителя ПОСЛЕ рендера
+  useEffect(() => {
+    if (isSuccess) {
+      setIsModalOpen(false);
+    }
+  }, [isSuccess, setIsModalOpen]);
 
   const handleFund = async () => {
     writeContract({
@@ -39,10 +45,6 @@ export const FundTierModal = ({
       chainId: sepolia.id,
     });
   };
-
-  if (isSuccess) {
-    setIsModalOpen(false);
-  }
 
   return (
     <div className="fixed inset-0 bg-black/75 flex justify-center items-center backdrop-blur-sm z-50">
@@ -65,7 +67,7 @@ export const FundTierModal = ({
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-slate-400">Amount:</span>
-              <span className="text-white font-medium">{tierAmount.toString()} ETH</span>
+              <span className="text-white font-medium">{amountInEth} ETH</span>
             </div>
           </div>
 
@@ -82,11 +84,11 @@ export const FundTierModal = ({
               disabled={isPending || isConfirming}
               className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-600 text-white rounded-lg font-medium transition-colors"
             >
-              {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : `Pay ${tierAmount.toString()} ETH`}
+              {isPending ? 'Confirming...' : isConfirming ? 'Processing...' : `Pay ${amountInEth} ETH`}
             </button>
           )}
         </div>
       </div>
     </div>
   );
-};
+}; 

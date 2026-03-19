@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Crowdfunding} from "./Crowdfunding.sol";
+import {CrowdFunding} from "./CrowdFunding.sol";
 
-contract CrowdfundingFactory {
+contract CrowdFundingFactory {
     address public owner;
     bool public paused;
 
@@ -37,7 +37,7 @@ contract CrowdfundingFactory {
         uint256 _goal,
         uint256 _durationInDays
     ) external notPaused {
-        Crowdfunding newCampaign = new Crowdfunding(
+        CrowdFunding newCampaign = new CrowdFunding(
             msg.sender,
             _name,
             _description,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { parseEther } from 'viem';
@@ -45,10 +45,12 @@ export const CreateCampaignModal = ({
     });
   };
 
-  if (isSuccess) {
-    onCampaignCreated();
+  useEffect(() => {
+   if (isSuccess) {
+    onCampaignCreated(); 
     setIsModalOpen(false);
-  }
+   }
+  }, [isSuccess, onCampaignCreated]);
 
   return (
     <div className="fixed inset-0 bg-black/75 flex justify-center items-center backdrop-blur-sm z-50">

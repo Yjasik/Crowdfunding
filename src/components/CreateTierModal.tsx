@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type Address } from 'viem';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 import { CrowdfundingABI } from '@/src/abis/Crowdfunding';
+import { parseEther } from 'viem'; 
 
 type CreateTierModalProps = {
   setIsModalOpen: (value: boolean) => void;
@@ -14,7 +15,7 @@ type CreateTierModalProps = {
 
 export const CreateTierModal = ({ setIsModalOpen, campaignAddress, onTierAdded }: CreateTierModalProps) => {
   const [tierName, setTierName] = useState('');
-  const [tierAmount, setTierAmount] = useState('1');
+  const [tierAmount, setTierAmount] = useState('0.1');
 
   const { data: hash, writeContract, isPending } = useWriteContract();
 
@@ -27,15 +28,17 @@ export const CreateTierModal = ({ setIsModalOpen, campaignAddress, onTierAdded }
       address: campaignAddress,
       abi: CrowdfundingABI,
       functionName: 'addTier',
-      args: [tierName, BigInt(tierAmount)],
+      args: [tierName, parseEther(tierAmount)],
       chainId: sepolia.id,
     });
   };
 
-  if (isSuccess) {
-    onTierAdded();
-    setIsModalOpen(false);
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      onTierAdded();
+      setIsModalOpen(false);
+    }
+  }, [isSuccess, onTierAdded, setIsModalOpen]); 
 
   return (
     <div className="fixed inset-0 bg-black/75 flex justify-center items-center backdrop-blur-sm z-50">

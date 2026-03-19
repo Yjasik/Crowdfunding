@@ -3,7 +3,7 @@
 
 import { useState } from 'react'; 
 import { useReadContract } from 'wagmi';
-import { type Address } from 'viem';
+import { type Address, formatEther } from 'viem';
 import { baseSepolia } from 'wagmi/chains';
 import { CrowdfundingABI } from '@/src/abis/Crowdfunding';
 import { FundTierModal } from './FundTierModal';
@@ -31,13 +31,14 @@ export const TierCard = ({ tier, index, campaignAddress, isEditing }: TierCardPr
   });
 
   const displayBackers = backersCount ? (backersCount as any).backers?.toString() || '0' : tier.backers.toString();
+  const amountInEth = formatEther(tier.amount);
 
   return (
     <>
       <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-blue-500/50 transition-all group">
         <h3 className="text-xl font-bold text-white mb-2">{tier.name}</h3>
         <div className="text-2xl font-bold text-blue-400 mb-4">
-          {tier.amount.toString()} ETH
+          {amountInEth.toString()} ETH
         </div>
         <div className="flex justify-between items-center mb-4">
           <span className="text-slate-400">Backers</span>

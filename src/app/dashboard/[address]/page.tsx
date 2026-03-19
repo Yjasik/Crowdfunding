@@ -1,6 +1,6 @@
 'use client';
 
-import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { type Address } from 'viem';
@@ -24,11 +24,9 @@ export default function DashboardPage() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Проверка, что пользователь смотрит свой дашборд
   const isOwnDashboard = userAddress && dashboardAddress && 
     userAddress.toLowerCase() === dashboardAddress.toLowerCase();
 
-  // Получение кампаний пользователя
   const { 
     data: myCampaigns, 
     isLoading: isLoadingMyCampaigns, 
@@ -40,7 +38,7 @@ export default function DashboardPage() {
     args: [dashboardAddress],
     chainId: sepolia.id,
     query: {
-      enabled: !!dashboardAddress, // Запрос только если есть адрес
+      enabled: !!dashboardAddress,
     }
   });
 
