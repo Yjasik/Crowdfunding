@@ -3,7 +3,7 @@
 import { useAccount, useReadContract } from 'wagmi';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import { type Address } from 'viem';
+import { type Address, formatEther } from 'viem';
 import { sepolia } from 'wagmi/chains';
 import { TierCard } from '@/src/components/TierCard';
 import { CreateTierModal } from '@/src/components/CreateTierModal';
@@ -86,9 +86,11 @@ export default function CampaignPage() {
   const hasDeadlinePassed = deadlineDate ? deadlineDate < new Date() : false;
 
   // Расчет процента
-  const balanceValue = balance ? Number(balance) : 0;
-  const goalValue = goal ? Number(goal) : 1; // Избегаем деления на 0
-  let balancePercentage = (balanceValue / goalValue) * 100;
+  const balanceValue = balance ? Number(formatEther(balance)) : 0;
+  const goalValue = goal ? Number(formatEther(goal)) : 1; 
+
+  // Расчет процента
+  let balancePercentage = goalValue > 0 ? (balanceValue / goalValue) * 100 : 0;
   if (balancePercentage >= 100) balancePercentage = 100;
 
   // Проверка на владельца
@@ -145,13 +147,13 @@ export default function CampaignPage() {
       {!isLoadingBalance && !isLoadingGoal && (
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-white mb-2">
-            Campaign Goal: {goal?.toString()} ETH
+            Campaign Goal: {goalValue?.toString()} ETH
           </h2>
           <div className="relative w-full h-8 bg-slate-700 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500"style={{ width: `${balancePercentage}%` }}/>
              <div className="absolute inset-0 flex items-center justify-between px-4">
               <span className="text-white text-sm font-medium">
-               {balance?.toString()} ETH
+               {balanceValue?.toString()} ETH
               </span>
               {balancePercentage < 100 && (
                <span className="text-white text-sm font-medium">

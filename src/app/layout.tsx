@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout(props: { children: ReactNode }) {
     return (
         <html lang="en">
-            <body className="bg-slate-100 min-h-screen">
+            <body className="bg-gradient-to-br from-slate-900 to-slate-800">
                 <Providers>
                     <Header />
                     {props.children}
